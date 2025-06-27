@@ -4,6 +4,7 @@ import Board from "./pages/Board";
 import PostDetail from "./pages/PostDetail";
 import Write from "./pages/Write";
 import Admin from "./pages/Admin";
+import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
 
 
@@ -17,6 +18,7 @@ function App() {
         <Route path="/board/:id" element={<PostDetail />} />
         <Route path="/write" element={<Write />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );

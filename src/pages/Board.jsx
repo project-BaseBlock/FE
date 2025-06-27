@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../api/axiosInstance";
+import { Link } from "react-router-dom";
 
 function Board() {
   const [posts, setPosts] = useState([]);
@@ -23,7 +24,9 @@ function Board() {
       <ul>
         {posts.map((post) => (
           <li key={post.id}>
-            <strong>{post.title}</strong> - {post.author}
+            <Link to={`/board/${post.id}`}>
+              <strong>{post.title}</strong> - {post.author}
+            </Link>
           </li>
         ))}
       </ul>
