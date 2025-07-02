@@ -20,7 +20,7 @@ function AdminUserList() {
       : `/admin/users/${userId}/revoke-admin`;
 
     try {
-      await axios.patch(endpoint);
+      await axios.patch(endpoint, { withCredentials: true });
       alert("권한이 변경되었습니다.");
       fetchUsers();
     } catch (err) {
