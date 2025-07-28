@@ -11,6 +11,7 @@ import NavBar from "./components/NavBar";
 function App() {
   return (
     <BrowserRouter>
+    <div className="max-w-7xl mx-auto px-4">
       <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -20,6 +21,7 @@ function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/login" element={<Login />} />
       </Routes>
+    </div>
     </BrowserRouter>
   );
 }
