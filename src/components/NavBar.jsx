@@ -37,6 +37,8 @@ function NavBar() {
         <li><Link to="/">홈</Link></li>
         <li><Link to="/board">게시판</Link></li>
         <li><Link to="/write">글쓰기</Link></li>
+        <li><Link to="/GameSchedule">경기일정</Link></li>
+        <li><Link to="/reservation">예매</Link></li>
         {isAdmin && <li><Link to="/admin">관리자 페이지</Link></li>}
 
         {isLoggedIn ? (

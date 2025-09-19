@@ -6,6 +6,12 @@ import Write from "./pages/Write";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
+import GameSchedule from "./pages/GameSchedule";
+import Reservation from "./pages/Reservation";
+import ReservationZone from "./pages/ReservationZone";
+import SeatRouter from "./pages/SeatRouter";
+import PaymentPage from "./pages/PaymentPage";
+import PaymentResult from "./pages/PaymentResult";
 
 
 function App() {
@@ -20,6 +26,13 @@ function App() {
         <Route path="/write" element={<Write />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/GameSchedule" element={<GameSchedule />} />
+        <Route path="/reservation" element={<Reservation />} />
+        <Route path="/reservation/zone" element={<ReservationZone />} />
+        <Route path="/reservation/seat" element={<SeatRouter />} />
+        <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/pay" element={<PaymentPage />} />
+        <Route path="/payment/result" element={<PaymentResult />} />
       </Routes>
     </div>
     </BrowserRouter>
