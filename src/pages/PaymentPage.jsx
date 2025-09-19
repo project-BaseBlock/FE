@@ -1,3 +1,4 @@
+// src/pages/PaymentPage.jsx
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useParams, useLocation } from "react-router-dom";
 import axios from "../api/axiosInstance";
@@ -84,13 +85,13 @@ export default function PaymentPage() {
       setMessage(`v2 호출 중... (stadiumId=${stadiumId}, zoneName=${zoneName}, seats=${seatNumbers.length})`);
 
       const headers = {};
-      const token = localStorage.getItem("accessToken");
+      const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
       if (token) headers.Authorization = `Bearer ${token}`;
 
       try {
         const { data } = await axios.post(
-          "/payments/ready/v2",
-          { reservationId, stadiumId, zoneName, seatNumbers },
+          "/api/payments/ready/v2",
+          { reservationId: Number(reservationId), stadiumId, zoneName, seatNumbers },
           { headers }
         );
         setReady(data);
@@ -99,16 +100,16 @@ export default function PaymentPage() {
       } catch (e1) {
         try {
           const { data } = await axios.post(
-            "/api/payments/ready/v2",
-            { reservationId, stadiumId, zoneName, seatNumbers },
+            `/api/payments/ready/${Number(reservationId)}`,
+            null,
             { headers }
           );
           setReady(data);
-          setMessage(`[v2/api] merchantUid=${data.merchantUid}, amount=${data.amount}`);
+          setMessage(`[ready/{id}] merchantUid=${data.merchantUid}, amount=${data.amount}`);
           setStatus("ready");
         } catch (e2) {
           setStatus("error");
-          setMessage(e2?.response?.data?.message || e2.message || "ready/v2 호출 실패");
+          setMessage(e2?.response?.data?.message || e2.message || "ready 호출 실패");
         }
       }
     })();
@@ -146,17 +147,17 @@ export default function PaymentPage() {
             const payload = { impUid: rsp.imp_uid, merchantUid: rsp.merchant_uid };
 
             const headers = {};
-            const token = localStorage.getItem("accessToken");
+            const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
             if (token) headers.Authorization = `Bearer ${token}`;
 
             try {
-              const { data } = await axios.post(`/payments/verify`, payload, { headers });
+              const { data } = await axios.post(`/api/payments/verify`, payload, { headers });
               setMessage(JSON.stringify(data, null, 2));
               setStatus("done");
               resolve();
             } catch {
               try {
-                const { data } = await axios.post(`/api/payments/verify`, payload, { headers });
+                const { data } = await axios.post(`/payments/verify`, payload, { headers });
                 setMessage(JSON.stringify(data, null, 2));
                 setStatus("done");
                 resolve();
@@ -179,13 +180,13 @@ export default function PaymentPage() {
     const payload = { impUid: "imp_LOCAL_" + Date.now(), merchantUid: ready.merchantUid };
 
     const headers = {};
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
     if (token) headers.Authorization = `Bearer ${token}`;
 
     try {
       const r =
-        (await axios.post(`/payments/verify`, payload, { headers }).catch(async () => {
-          return await axios.post(`/api/payments/verify`, payload, { headers });
+        (await axios.post(`/api/payments/verify`, payload, { headers }).catch(async () => {
+          return await axios.post(`/payments/verify`, payload, { headers });
         })) || {};
       setMessage(JSON.stringify(r.data, null, 2));
       setStatus("done");

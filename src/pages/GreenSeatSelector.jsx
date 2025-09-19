@@ -1,146 +1,267 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+// src/pages/GreenSeatSelector.jsx
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "../api/axiosInstance";
+import styles from "../styles/GreenSeatSelector.module.css";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
-/**
- * props는 SeatRouter.jsx에서 내려줌:
- *   gameId: string|number
- *   stadiumId: string|number
- *   zoneName: "그린" (한글명, 서버 금액 계산에 사용)
- *   zone: "green" (영문 코드가 있을 수도 있음 — 사용하진 않지만 참고)
- */
-export default function GreenSeatSelector({ gameId, stadiumId, zoneName /*, zone*/ }) {
+export default function GreenSeatSelector() {
+  const [selectedCount, setSelectedCount] = useState(1);
+  const [reservedSeats, setReservedSeats] = useState([]);
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [hoveredSeat, setHoveredSeat] = useState(null);
+  const [error, setError] = useState("");
+
+  // ✅ 자동 호출/중복 호출 방지 플래그
+  const [clicked, setClicked] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // 좌석 선택 상태 (프로젝트에 맞춰 기존 좌석 그리드가 toggleSeat를 호출하도록만 맞추면 됨)
-  const [selectedSeats, setSelectedSeats] = useState([]); // ex) ["g001","g002","g003"]
+  const gameId = searchParams.get("gameId");
+  const stadiumId = searchParams.get("stadiumId");
+  const zoneName = searchParams.get("zoneName") || "그린";
 
-  const toggleSeat = (code) => {
-    setSelectedSeats((prev) =>
-      prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]
-    );
+  const prefix = "g";
+  const seatPrice = 10000;
+
+  // 좌석 조회 (계약: zone 파라미터 사용)
+  useEffect(() => {
+    if (!stadiumId) return;
+    axios
+      .get(`/api/seats?zone=${encodeURIComponent(zoneName)}&stadiumId=${stadiumId}`)
+      .then((res) => {
+        const reserved =
+          (res.data || [])
+            .filter((seat) => seat?.isActive === false) // ✅ undefined/null은 제외
+            .map((seat) => seat.number);
+        setReservedSeats(reserved);
+      })
+      .catch(console.error);
+  }, [stadiumId, zoneName]);
+
+  // 토스트 자동 닫힘
+  useEffect(() => {
+    if (!error) return;
+    const t = setTimeout(() => setError(""), 1800);
+    return () => clearTimeout(t);
+  }, [error]);
+
+  // 10x10 블록 2개 (아래가 1번)
+  const blocks = useMemo(() => {
+    const makeBlock = (start) => {
+      const rows = [];
+      let n = start;
+      for (let r = 0; r < 10; r++) {
+        const row = [];
+        for (let c = 0; c < 10; c++) {
+          row.push(`${prefix}${String(n).padStart(3, "0")}`);
+          n++;
+        }
+        rows.unshift(row);
+      }
+      return rows;
+    };
+    return [makeBlock(1), makeBlock(101)];
+  }, []);
+
+  const getSeatGroup = (seat) => {
+    for (const block of blocks) {
+      for (const row of block) {
+        const idx = row.indexOf(seat);
+        if (idx === -1) continue;
+        if (idx + selectedCount > row.length) return [];
+        const group = row.slice(idx, idx + selectedCount);
+        if (group.some((s) => reservedSeats.includes(s))) return [];
+        return group;
+      }
+    }
+    return [];
   };
 
-  // 예약 가능 조건 (값 최소 검증)
-  const canReserve = useMemo(() => {
-    const gid = Number(gameId);
-    const sid = Number(stadiumId);
-    return (
-      Number.isFinite(gid) &&
-      Number.isFinite(sid) &&
-      typeof zoneName === "string" &&
-      zoneName.length > 0 &&
-      Array.isArray(selectedSeats) &&
-      selectedSeats.length > 0
-    );
-  }, [gameId, stadiumId, zoneName, selectedSeats]);
+  const findSelectedGroup = (seat) => {
+    for (const block of blocks) {
+      for (const row of block) {
+        for (let i = 0; i <= row.length - selectedCount; i++) {
+          const group = row.slice(i, i + selectedCount);
+          if (group.includes(seat) && group.every((s) => selectedSeats.includes(s))) {
+            return group;
+          }
+        }
+      }
+    }
+    return [];
+  };
 
-  // ✅ 예약 생성 후, 결제 페이지로 이동(메타 전달 보장)
-  async function handleReserve() {
-    if (!canReserve) {
-      alert("예약 정보가 부족합니다. 좌석을 선택했는지 확인하세요.");
+  const hoveredGroup = hoveredSeat ? getSeatGroup(hoveredSeat) : [];
+
+  const handleClickSeat = (seat) => {
+    if (reservedSeats.includes(seat)) {
+      setError("예매할 수 없는 좌석입니다.");
+      return;
+    }
+    const selectedGroup = findSelectedGroup(seat);
+    if (selectedGroup.length > 0) {
+      setSelectedSeats((prev) => prev.filter((s) => !selectedGroup.includes(s)));
+      return;
+    }
+    const group = getSeatGroup(seat);
+    if (group.length === 0) {
+      setError("좌석을 선택할 수 없습니다.");
+      return;
+    }
+    setSelectedSeats((prev) => [...prev, ...group]);
+  };
+
+  // ✅ 진짜 클릭일 때만 POST
+  const handleReserve = async () => {
+    if (!clicked) return; // 클릭 없이 들어오면 무시
+    if (!gameId || !stadiumId) {
+      setError("잘못된 접근입니다. (gameId/stadiumId 누락)");
+      setClicked(false);
+      return;
+    }
+    if (selectedSeats.length === 0 || submitting) {
+      setClicked(false);
       return;
     }
 
-    const payload = {
-      gameId: Number(gameId),
-      stadiumId: Number(stadiumId),
-      zoneName: String(zoneName),
-      seatNumbers: selectedSeats, // ["g001","g002",...]
-    };
-
     try {
-      // 컨트롤러 경로가 /api/reservations 인지 /reservations 인지 프로젝트에 맞춰 처리
-      let res;
-      try {
-        res = await axios.post("/api/reservations", payload);
-      } catch (e1) {
-        // 백엔드가 /reservations만 받는 환경 대비 폴백
-        res = await axios.post("/reservations", payload);
-      }
-      const data = res?.data || {};
-
-      // 응답에서 reservationId 추출 (id or reservationId)
-      const reservationId = String(data.id ?? data.reservationId ?? "");
-      if (!reservationId) {
-        console.error("[reserve] invalid response:", data);
-        alert("reservationId를 찾을 수 없습니다.");
-        return;
-      }
-
-      // ✅ PaymentPage가 메타를 어떤 경로로든 주워가도록 백업 저장
-      localStorage.setItem("selectedStadiumId", String(stadiumId));
-      localStorage.setItem("selectedZoneName", String(zoneName));
-      localStorage.setItem("selectedSeats", JSON.stringify(selectedSeats));
-
-      // ✅ state + 쿼리스트링 둘 다 넣어서 이동 (둘 중 하나 유실되어도 복구됨)
-      const qs =
-        `reservationId=${encodeURIComponent(reservationId)}` +
-        `&stadiumId=${encodeURIComponent(stadiumId)}` +
-        `&zoneName=${encodeURIComponent(zoneName)}` +
-        `&seats=${encodeURIComponent(selectedSeats.join(","))}`;
-
-      console.log("[Green->Pay] push meta", {
-        reservationId,
-        stadiumId,
+      setSubmitting(true);
+      const body = {
+        gameId: Number(gameId),
+        stadiumId: Number(stadiumId),
         zoneName,
         seatNumbers: selectedSeats,
-      });
+      };
+      const res = await axios.post("/api/reservations", body);
+      const reservationId = res.data.reservationId;
 
-      navigate(`/pay?${qs}`, {
-        state: {
-          reservationId,
-          stadiumId: Number(stadiumId),
-          zoneName: String(zoneName),
-          seatNumbers: selectedSeats,
-        },
-      });
+      // ✅ 결제 페이지로 메타 전달: 쿼리 + state + localStorage
+      try {
+        localStorage.setItem("selectedSeats", JSON.stringify(selectedSeats));
+        localStorage.setItem("selectedZoneName", String(zoneName));
+        localStorage.setItem("selectedStadiumId", String(stadiumId));
+      } catch {}
+      navigate(
+        `/payment?reservationId=${reservationId}` +
+        `&stadiumId=${stadiumId}` +
+        `&zoneName=${encodeURIComponent(zoneName)}` +
+        `&seats=${encodeURIComponent(selectedSeats.join(","))}`,
+        { state: { stadiumId: Number(stadiumId), zoneName, seatNumbers: selectedSeats } }
+      );
     } catch (e) {
-      console.error("reserve failed", e);
-      alert(e?.response?.data?.message || e.message || "예약 생성 실패");
+      console.error(e);
+      setError("예매 요청에 실패했습니다.");
+    } finally {
+      setSubmitting(false);
+      setClicked(false);
     }
-  }
+  };
 
-  // (UI 부분은 네 기존 좌석 구성 그대로 쓰고, toggleSeat/handleReserve 연결만 하면 됨)
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-3">그린 구역 좌석 선택</h2>
+    <div className={styles.container}>
+      {error && <div className={styles.toast}>{error}</div>}
 
-      {/* 디버그: 현재 메타 확인 */}
-      <pre className="bg-gray-100 p-2 mb-3 text-xs">
-        {JSON.stringify({ gameId, stadiumId, zoneName, selectedSeats }, null, 2)}
-      </pre>
-
-      {/* 예시 좌석(프로젝트에 있는 기존 좌석 컴포넌트로 교체 가능) */}
-      <div className="grid grid-cols-6 gap-2 mb-4">
-        {Array.from({ length: 12 }).map((_, i) => {
-          const code = `g${String(i + 1).padStart(3, "0")}`;
-          const active = selectedSeats.includes(code);
-          return (
-            <button
-              key={code}
-              onClick={() => toggleSeat(code)}
-              className={`px-2 py-1 rounded border ${
-                active ? "bg-black text-white" : "bg-white"
-              }`}
-              type="button"
-            >
-              {code}
-            </button>
-          );
-        })}
+      <div className={styles.top}>
+        <h2 className={styles.title}>좌석 선택 (그린 구역)</h2>
+        <label className={styles.dropdownLabel}>
+          인원 선택:
+          <select
+            value={selectedCount}
+            onChange={(e) => {
+              setSelectedCount(parseInt(e.target.value, 10));
+              setSelectedSeats([]);
+              setError("");
+            }}
+            className={styles.dropdown}
+          >
+            {[1, 2, 3, 4].map((n) => (
+              <option key={n} value={n}>
+                {n}명
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
-      <button
-        onClick={handleReserve}
-        disabled={!canReserve}
-        className={`px-4 py-2 rounded text-white ${
-          canReserve ? "bg-black" : "bg-gray-400 cursor-not-allowed"
-        }`}
-        type="button"
-      >
-        결제하기(예약 생성)
-      </button>
+      <div className={styles.seatArea}>
+        <div className={styles.blocks}>
+          <div className={styles.block}>
+            {blocks[0].map((row, rIdx) => (
+              <div key={`L-${rIdx}`} className={styles.seatRow}>
+                {row.map((seat) => (
+                  <div
+                    key={seat}
+                    className={[
+                      styles.seat,
+                      reservedSeats.includes(seat) ? styles.reserved : "",
+                      selectedSeats.includes(seat) ? styles.selected : "",
+                      hoveredGroup.includes(seat) ? styles.hovered : "",
+                    ].join(" ")}
+                    onClick={() => handleClickSeat(seat)}
+                    onMouseEnter={() => setHoveredSeat(seat)}
+                    onMouseLeave={() => setHoveredSeat(null)}
+                  >
+                    {seat}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+          <div className={styles.block}>
+            {blocks[1].map((row, rIdx) => (
+              <div key={`R-${rIdx}`} className={styles.seatRow}>
+                {row.map((seat) => (
+                  <div
+                    key={seat}
+                    className={[
+                      styles.seat,
+                      reservedSeats.includes(seat) ? styles.reserved : "",
+                      selectedSeats.includes(seat) ? styles.selected : "",
+                      hoveredGroup.includes(seat) ? styles.hovered : "",
+                    ].join(" ")}
+                    onClick={() => handleClickSeat(seat)}
+                    onMouseEnter={() => setHoveredSeat(seat)}
+                    onMouseLeave={() => setHoveredSeat(null)}
+                  >
+                    {seat}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.fieldLabel}>⚾ 필드</div>
+      </div>
+
+      {/* 하단 요약/버튼 - 버튼은 반드시 type="button" */}
+      <div className={styles.bottomBar}>
+        <div className={styles.selectedWrap}>
+          {selectedSeats.length === 0 ? (
+            <span className={styles.none}>선택된 좌석 없음</span>
+          ) : (
+            <span className={styles.selectedText}>
+              선택 좌석: {selectedSeats.join(", ")}
+            </span>
+          )}
+        </div>
+        <div className={styles.total}>
+          총 가격: {(selectedSeats.length * seatPrice).toLocaleString()}원
+        </div>
+        <button
+          type="button"
+          className={styles.reserveButton}
+          disabled={selectedSeats.length === 0 || submitting}
+          onClick={() => {
+            setClicked(true);
+            handleReserve();
+          }}
+        >
+          {submitting ? "예매 중..." : "예매하기"}
+        </button>
+      </div>
     </div>
   );
 }

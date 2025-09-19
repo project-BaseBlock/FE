@@ -5,139 +5,134 @@
 
 .toast {
   position: fixed;
-  top: 20px;
+  top: 18px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #f44336;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 20px;
+  background: #f44336;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 18px;
   z-index: 1000;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .top {
   text-align: center;
   margin-bottom: 20px;
 }
-
 .title {
   font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-weight: 800;
+  margin-bottom: 8px;
 }
-
 .dropdownLabel {
-  font-size: 16px;
+  font-size: 15px;
 }
-
 .dropdown {
-  margin-left: 10px;
-  padding: 5px 10px;
-  font-size: 16px;
+  margin-left: 8px;
+  padding: 6px 10px;
+  font-size: 15px;
 }
 
-.gridWrapper {
+/* 좌석 영역 */
+.seatArea {
   display: flex;
+  flex-direction: column;
+  align-items: center;          /* 블록 전체를 가운데 정렬 */
+  gap: 16px;
+  min-height: 420px;
+}
+
+.blocks {
+  display: flex;                /* 좌/우 블록 나란히 */
+  gap: 32px;
+  align-items: flex-start;
   justify-content: center;
-  gap: 60px;
-  margin-bottom: 30px;
+  width: 100%;
 }
 
 .block {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: column;       /* 행들을 세로로 쌓음 */
+  gap: 8px;
 }
 
-.row {
-  display: flex;
+.seatRow {
+  display: flex;                /* 한 행의 좌석이 가로로 */
   gap: 6px;
 }
 
 .seat {
   width: 40px;
   height: 40px;
-  background-color: green;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-  border-radius: 5px;
+  background: #2e7d32;         /* 그린 */
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 6px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+  user-select: none;
 }
 
 .seat:hover {
-  transform: scale(1.15);
+  transform: scale(1.12);
 }
 
 .hovered {
-  transform: scale(1.2);
-  background-color: #66bb66;
+  transform: scale(1.16);
+  background: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, .35) inset;
 }
 
 .selected {
-  background-color: #d9d9d9;
-  color: black;
+  background: #d9d9d9;
+  color: #000;
 }
 
 .reserved {
-  background-color: #aaa;
+  background: #9e9e9e;
   cursor: not-allowed;
 }
 
 .fieldLabel {
   text-align: center;
   font-size: 20px;
-  margin-top: 10px;
-  margin-bottom: 20px;
-  font-weight: bold;
+  font-weight: 800;
+  margin-top: 8px;
 }
 
-.summary {
-  text-align: center;
+/* 하단 바(좌석 영역 아래 배치) */
+.bottomBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 18px;
+  flex-wrap: wrap;
 }
 
-.seatList {
-  list-style: none;
-  padding: 0;
-  margin: 10px 0;
-}
+.selectedWrap { max-width: 70%; }
+.selectedText { font-weight: 600; }
+.none { color: gray; }
 
 .total {
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-.none {
-  color: gray;
-}
-
-.actionArea {
-  margin-top: 30px;
-  text-align: center;
+  font-weight: 800;
 }
 
 .reserveButton {
-  background-color: #2e7d32;
-  color: white;
-  padding: 12px 30px;
-  font-size: 16px;
-  font-weight: bold;
+  background: #2e7d32;
+  color: #fff;
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 800;
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background .15s ease, transform .05s ease;
 }
-
-.reserveButton:hover:enabled {
-  background-color: #1b5e20;
-}
-
-.reserveButton:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
+.reserveButton:hover:enabled { background: #1b5e20; }
+.reserveButton:disabled { background: #c7c7c7; cursor: not-allowed; }
