@@ -1,0 +1,51 @@
+.wrapper {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  padding: 24px;
+}
+
+.sidebar {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menuItem {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #111827;
+  background: #f9fafb;
+  transition: background 0.15s ease;
+}
+
+.menuItem:hover {
+  background: #eef2ff;
+}
+
+.active {
+  background: #e0e7ff;
+  font-weight: 700;
+}
+
+.content {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
+  min-height: 420px;
+  background: #ffffff;
+}

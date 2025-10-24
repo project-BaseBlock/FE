@@ -30,16 +30,24 @@ export default function PaymentPage() {
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
 
+  // 로컬에 저장된 메타 정리 함수
+  const clearLocalMeta = () => {
+    localStorage.removeItem("selectedSeats");
+    localStorage.removeItem("selectedStadiumId");
+    localStorage.removeItem("selectedZoneName");
+  };
+
   useEffect(() => {
     (async () => {
       if (!reservationId) {
         setStatus("error");
-        setMessage("reservationId가 없습니다. /pay?reservationId=123 또는 /pay/123 형태로 접근하세요.");
+        setMessage("reservationId가 없습니다. /payment?reservationId=123 또는 /payment/123 형태로 접근하세요.");
         return;
       }
 
-      // 1) 값 수집: state → QS → localStorage
+      // 1) 값 수집: state → query → localStorage
       const state = location.state || {};
+
       const seatsQS = sp.get("seats");
       const seatsFromQS = seatsQS
         ? seatsQS.split(",").map((s) => s.trim()).filter(Boolean)
@@ -80,37 +88,26 @@ export default function PaymentPage() {
         return;
       }
 
-      // 2) ready/v2 호출
+      // 2) ready/v2 단일 호출
       setStatus("loading");
       setMessage(`v2 호출 중... (stadiumId=${stadiumId}, zoneName=${zoneName}, seats=${seatNumbers.length})`);
 
       const headers = {};
-      const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
+      const token = localStorage.getItem("accessToken");
       if (token) headers.Authorization = `Bearer ${token}`;
 
       try {
         const { data } = await axios.post(
-          "/api/payments/ready/v2",
+          `/api/payments/ready/v2`,
           { reservationId: Number(reservationId), stadiumId, zoneName, seatNumbers },
           { headers }
         );
         setReady(data);
         setMessage(`[v2] merchantUid=${data.merchantUid}, amount=${data.amount}`);
         setStatus("ready");
-      } catch (e1) {
-        try {
-          const { data } = await axios.post(
-            `/api/payments/ready/${Number(reservationId)}`,
-            null,
-            { headers }
-          );
-          setReady(data);
-          setMessage(`[ready/{id}] merchantUid=${data.merchantUid}, amount=${data.amount}`);
-          setStatus("ready");
-        } catch (e2) {
-          setStatus("error");
-          setMessage(e2?.response?.data?.message || e2.message || "ready 호출 실패");
-        }
+      } catch (e) {
+        setStatus("error");
+        setMessage(e?.response?.data?.message || e.message || "ready/v2 호출 실패");
       }
     })();
   }, [reservationId, sp, location.state]);
@@ -147,23 +144,20 @@ export default function PaymentPage() {
             const payload = { impUid: rsp.imp_uid, merchantUid: rsp.merchant_uid };
 
             const headers = {};
-            const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
+            const token = localStorage.getItem("accessToken");
             if (token) headers.Authorization = `Bearer ${token}`;
 
             try {
               const { data } = await axios.post(`/api/payments/verify`, payload, { headers });
               setMessage(JSON.stringify(data, null, 2));
               setStatus("done");
+              // ✅ 결제 성공 시 메타 정리
+              clearLocalMeta();
               resolve();
-            } catch {
-              try {
-                const { data } = await axios.post(`/payments/verify`, payload, { headers });
-                setMessage(JSON.stringify(data, null, 2));
-                setStatus("done");
-                resolve();
-              } catch (e) {
-                reject(new Error(e?.response?.data?.message || "VERIFY 호출 실패"));
-              }
+            } catch (e) {
+              setStatus("error");
+              setMessage(e?.response?.data?.message || "VERIFY 호출 실패");
+              reject(e);
             }
           }
         );
@@ -180,16 +174,15 @@ export default function PaymentPage() {
     const payload = { impUid: "imp_LOCAL_" + Date.now(), merchantUid: ready.merchantUid };
 
     const headers = {};
-    const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken");
     if (token) headers.Authorization = `Bearer ${token}`;
 
     try {
-      const r =
-        (await axios.post(`/api/payments/verify`, payload, { headers }).catch(async () => {
-          return await axios.post(`/payments/verify`, payload, { headers });
-        })) || {};
+      const r = await axios.post(`/api/payments/verify`, payload, { headers });
       setMessage(JSON.stringify(r.data, null, 2));
       setStatus("done");
+      // ✅ 목 성공 시에도 메타 정리
+      clearLocalMeta();
     } catch (e) {
       setStatus("error");
       setMessage(e?.response?.data?.message || e.message);

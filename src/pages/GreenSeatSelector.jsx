@@ -10,8 +10,6 @@ export default function GreenSeatSelector() {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [hoveredSeat, setHoveredSeat] = useState(null);
   const [error, setError] = useState("");
-
-  // ✅ 자동 호출/중복 호출 방지 플래그
   const [clicked, setClicked] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -25,16 +23,15 @@ export default function GreenSeatSelector() {
   const prefix = "g";
   const seatPrice = 10000;
 
-  // 좌석 조회 (계약: zone 파라미터 사용)
+  // 좌석 조회 (백엔드: /api/seats?stadiumId&zone)
   useEffect(() => {
     if (!stadiumId) return;
     axios
       .get(`/api/seats?zone=${encodeURIComponent(zoneName)}&stadiumId=${stadiumId}`)
       .then((res) => {
-        const reserved =
-          (res.data || [])
-            .filter((seat) => seat?.isActive === false) // ✅ undefined/null은 제외
-            .map((seat) => seat.number);
+        const reserved = (res.data || [])
+          .filter((seat) => seat?.isActive === false)
+          .map((seat) => seat.number);
         setReservedSeats(reserved);
       })
       .catch(console.error);
@@ -113,9 +110,9 @@ export default function GreenSeatSelector() {
     setSelectedSeats((prev) => [...prev, ...group]);
   };
 
-  // ✅ 진짜 클릭일 때만 POST
+  // 예약 생성 → 결제 페이지 이동 + 메타 저장
   const handleReserve = async () => {
-    if (!clicked) return; // 클릭 없이 들어오면 무시
+    if (!clicked) return;
     if (!gameId || !stadiumId) {
       setError("잘못된 접근입니다. (gameId/stadiumId 누락)");
       setClicked(false);
@@ -134,22 +131,23 @@ export default function GreenSeatSelector() {
         zoneName,
         seatNumbers: selectedSeats,
       };
+
       const res = await axios.post("/api/reservations", body);
       const reservationId = res.data.reservationId;
 
-      // ✅ 결제 페이지로 메타 전달: 쿼리 + state + localStorage
-      try {
-        localStorage.setItem("selectedSeats", JSON.stringify(selectedSeats));
-        localStorage.setItem("selectedZoneName", String(zoneName));
-        localStorage.setItem("selectedStadiumId", String(stadiumId));
-      } catch {}
-      navigate(
-        `/payment?reservationId=${reservationId}` +
-        `&stadiumId=${stadiumId}` +
-        `&zoneName=${encodeURIComponent(zoneName)}` +
-        `&seats=${encodeURIComponent(selectedSeats.join(","))}`,
-        { state: { stadiumId: Number(stadiumId), zoneName, seatNumbers: selectedSeats } }
-      );
+      // 결제 페이지에서 메타를 가져갈 수 있도록 저장
+      localStorage.setItem("selectedSeats", JSON.stringify(selectedSeats));
+      localStorage.setItem("selectedStadiumId", String(stadiumId));
+      localStorage.setItem("selectedZoneName", String(zoneName));
+
+      navigate(`/payment?reservationId=${reservationId}`, {
+        state: {
+          stadiumId: Number(stadiumId),
+          zoneName,
+          seatNumbers: selectedSeats,
+        },
+        replace: false,
+      });
     } catch (e) {
       console.error(e);
       setError("예매 요청에 실패했습니다.");
@@ -236,7 +234,6 @@ export default function GreenSeatSelector() {
         <div className={styles.fieldLabel}>⚾ 필드</div>
       </div>
 
-      {/* 하단 요약/버튼 - 버튼은 반드시 type="button" */}
       <div className={styles.bottomBar}>
         <div className={styles.selectedWrap}>
           {selectedSeats.length === 0 ? (
