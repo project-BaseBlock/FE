@@ -1,3 +1,4 @@
+// src/pages/AdminUserList.jsx
 import { useEffect, useState } from "react";
 import axios from "../api/axiosInstance";
 
@@ -34,28 +35,86 @@ function AdminUserList() {
   }, []);
 
   return (
-    <div>
-      <h3>계정 목록</h3>
-      <ul>
-        {users.map((user) => (
-          <li
-            key={user.id}
+    <div style={{ marginTop: "20px" }}>
+      <h3 style={{ marginBottom: "12px" }}>계정 목록</h3>
+
+      <table
+        style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          border: "1px solid #e5e7eb",
+          fontSize: "14px",
+        }}
+      >
+        <thead>
+          <tr
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "8px",
+              backgroundColor: "#f9fafb",
+              borderBottom: "1px solid #d1d5db",
+              textAlign: "left",
             }}
           >
-            <span>
-              {user.nickname} ({user.email}) - {user.role}
-            </span>
-            <button onClick={() => toggleRole(user.id, user.role)}>
-              {user.role === "USER" ? "ADMIN 전환" : "USER 전환"}
-            </button>
-          </li>
-        ))}
-      </ul>
+            <th style={{ padding: "8px", borderRight: "1px solid #e5e7eb" }}>
+              ID
+            </th>
+            <th style={{ padding: "8px", borderRight: "1px solid #e5e7eb" }}>
+              닉네임
+            </th>
+            <th style={{ padding: "8px", borderRight: "1px solid #e5e7eb" }}>
+              이메일
+            </th>
+            <th style={{ padding: "8px", borderRight: "1px solid #e5e7eb" }}>
+              권한
+            </th>
+            <th style={{ padding: "8px" }}>관리</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.length === 0 ? (
+            <tr>
+              <td
+                colSpan="5"
+                style={{
+                  textAlign: "center",
+                  padding: "12px",
+                  color: "#6b7280",
+                }}
+              >
+                표시할 계정이 없습니다.
+              </td>
+            </tr>
+          ) : (
+            users.map((user) => (
+              <tr
+                key={user.id}
+                style={{
+                  borderBottom: "1px solid #e5e7eb",
+                }}
+              >
+                <td style={{ padding: "8px" }}>{user.id}</td>
+                <td style={{ padding: "8px" }}>{user.nickname}</td>
+                <td style={{ padding: "8px" }}>{user.email}</td>
+                <td style={{ padding: "8px" }}>{user.role}</td>
+                <td style={{ padding: "8px" }}>
+                  <button
+                    onClick={() => toggleRole(user.id, user.role)}
+                    style={{
+                      backgroundColor: "#fff",
+                      color: "#3b82f6",
+                      border: "1px solid #3b82f6",
+                      borderRadius: "6px",
+                      padding: "6px 10px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {user.role === "USER" ? "ADMIN 전환" : "USER 전환"}
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }
