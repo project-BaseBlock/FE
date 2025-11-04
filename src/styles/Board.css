@@ -1,0 +1,82 @@
+/* 컨테이너 */
+.board {
+  padding: 24px;
+}
+
+/* 페이지 제목 */
+.board__title {
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb; /* 진한 하단선 */
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* 빈 상태 */
+.board__empty {
+  padding: 32px;
+  text-align: center;
+  color: #6b7280; /* 회색 */
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+/* 리스트 카드 */
+.board__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #e5e7eb;      /* 외곽선 */
+  border-radius: 12px;
+  overflow: hidden;                /* 둥근 모서리에 맞춰 자르기 */
+  background: #fff;                /* 흰 배경으로 선이 또렷 */
+}
+
+/* 항목 */
+.board__item {
+  border-top: 1px solid #e5e7eb;   /* 항목 사이 디바이더 */
+}
+.board__item:first-child {
+  border-top: none;
+}
+
+/* 링크 영역 (양끝 정렬) */
+.board__link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s ease;
+}
+.board__link:hover {
+  background: #f9fafb;            /* 살짝 음영 */
+}
+
+/* 좌측 텍스트 구역 */
+.board__main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.board__titleText {
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* 작성자, 메타정보 */
+.board__meta {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* 우측 꺾쇠 아이콘 */
+.board__chevron {
+  font-size: 22px;
+  line-height: 1;
+  color: #9ca3af;
+}

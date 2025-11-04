@@ -1,0 +1,151 @@
+.container {
+  width: 100%;
+  padding: 20px;
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f44336;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  z-index: 1000;
+  font-weight: bold;
+}
+
+.top {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.dropdownLabel {
+  font-size: 16px;
+}
+
+.dropdown {
+  margin-left: 10px;
+  padding: 5px 10px;
+  font-size: 16px;
+}
+
+.body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.left {
+  flex: 2;
+}
+
+.right {
+  flex: 1;
+  margin-left: 40px;
+  padding: 10px;
+  border-left: 2px solid #eee;
+}
+
+.seatGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.seatRow {
+  display: flex;
+  gap: 6px;
+}
+
+.seat {
+  width: 40px;
+  height: 40px;
+  background-color: blue;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.seat:hover {
+  transform: scale(1.15);
+}
+
+.hovered {
+  transform: scale(1.2);
+  background-color: #4da6ff;
+}
+
+.selected {
+  background-color: #d9d9d9;
+  color: #000;
+}
+
+.reserved {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+.fieldLabel {
+  text-align: center;
+  font-size: 20px;
+  margin-top: 20px;
+  font-weight: bold;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.seatList {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.total {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.none {
+  color: gray;
+}
+
+.actionArea {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.reserveButton {
+  background-color: #2e7d32;
+  color: white;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.reserveButton:hover:enabled {
+  background-color: #1b5e20;
+}
+
+.reserveButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
