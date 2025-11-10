@@ -7,11 +7,12 @@ import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import LogoBar from "./components/LogoBar";
 import NavBar from "./components/NavBar";
+import Signup from "./pages/Signup";
 
-// ✅ 홈을 예매 페이지로 사용
+// 홈을 예매 페이지로 사용
 import Reservation from "./pages/Reservation";
 
-// ✅ '경기·결과' 페이지로 사용 (기존 GameSchedule 재활용)
+// '경기·결과' 페이지로 사용 (기존 GameSchedule 재활용)
 import GameSchedule from "./pages/GameSchedule";
 
 import ReservationZone from "./pages/ReservationZone";
@@ -39,18 +40,19 @@ function App() {
         <LogoBar />
         <NavBar />
         <Routes>
-          {/* ✅ '/'를 예매(Reservation)로 매핑 */}
+          {/* '/'를 예매(Reservation)로 매핑 */}
           <Route path="/" element={<Reservation />} />
 
-          {/* ✅ 게시판 (상세 먼저, 그다음 목록) */}
+          {/* 게시판 (상세 먼저, 그다음 목록) */}
           <Route path="/board/:id" element={<PostDetail />} />
           <Route path="/board" element={<Board />} />
           <Route path="/write" element={<Write />} />
+          <Route path="/signup" element={<Signup />} />
 
           {/* 인증 */}
           <Route path="/login" element={<Login />} />
 
-          {/* ✅ '경기·결과' 경로: /results → GameSchedule 재사용 */}
+          {/* '경기·결과' 경로: /results → GameSchedule 재사용 */}
           <Route path="/results" element={<GameSchedule />} />
           {/* 호환성: 예전 경로 /GameSchedule 접근 시 /results로 리다이렉트 */}
           <Route path="/GameSchedule" element={<Navigate to="/results" replace />} />

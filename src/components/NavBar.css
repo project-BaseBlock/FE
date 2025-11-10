@@ -11,13 +11,25 @@
   padding: 0;
 }
 
-.nav-list li a {
+.nav-list li a,
+.nav-list li button {
   color: white;
   text-decoration: none;
   font-weight: bold;
   transition: color 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
 }
 
-.nav-list li a:hover {
+.nav-list li a:hover,
+.nav-list li button:hover {
   color: #61dafb;
+}
+
+.btn-signup {
+  padding: 6px 10px;
+  border: 1px solid #61dafb;
+  border-radius: 6px;
 }

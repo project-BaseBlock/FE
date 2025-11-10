@@ -42,19 +42,9 @@ function NavBar() {
   return (
     <nav className="navbar">
       <ul className="nav-list">
-        {/* ✅ 홈 라벨을 '경기·예매'로 변경, '/'로 이동 */}
         <li><Link to="/">경기·예매</Link></li>
-
-        {/* ✅ 게시판 유지 */}
         <li><Link to="/board">게시판</Link></li>
-
-        {/* ✅ '경기일정' → '경기·결과'로 변경, /results 로 이동 */}
         <li><Link to="/results">경기·결과</Link></li>
-
-        {/* ✅ 예매 개별 메뉴 삭제(홈이 예매 페이지이므로 불필요)
-            <li><Link to="/reservation">예매</Link></li>
-        */}
-
         {isAdmin && <li><Link to="/admin">관리자 페이지</Link></li>}
 
         {authed ? (
@@ -68,7 +58,11 @@ function NavBar() {
             <li><button onClick={handleLogout}>로그아웃</button></li>
           </>
         ) : (
-          <li><Link to="/login">로그인</Link></li>
+          <>
+            <li><Link to="/login">로그인</Link></li>
+            {/* [ADDED] 비로그인일 때만 노출되는 회원가입 버튼 */}
+            <li><Link to="/signup" className="btn-signup">회원가입</Link></li>
+          </>
         )}
       </ul>
     </nav>

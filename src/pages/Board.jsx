@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "../api/axiosInstance";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Board.css";
+import { isAuthenticated } from "../utils/auth"; // [CHANGED] 추가
 
 function Board() {
   const [posts, setPosts] = useState([]);
@@ -22,6 +23,16 @@ function Board() {
     fetchPosts();
   }, []);
 
+  // [CHANGED] 글쓰기 버튼 클릭 핸들러: 비로그인 차단
+  const handleWriteClick = () => {
+    if (!isAuthenticated()) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+    navigate("/write");
+  };
+
   return (
     <div className="board">
       {/* ✅ 제목 + 글쓰기 버튼 한 줄 정렬 */}
@@ -37,7 +48,7 @@ function Board() {
 
         {/* ✅ 글쓰기 버튼 */}
         <button
-          onClick={() => navigate("/write")}
+          onClick={handleWriteClick} // [CHANGED]
           style={{
             backgroundColor: "#3b82f6",
             color: "white",
