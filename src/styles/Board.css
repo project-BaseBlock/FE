@@ -7,7 +7,7 @@
 .board__title {
   margin: 0 0 16px;
   padding-bottom: 8px;
-  border-bottom: 2px solid #e5e7eb; /* 진한 하단선 */
+  border-bottom: 2px solid #e5e7eb; 
   font-size: 20px;
   font-weight: 700;
 }
@@ -27,15 +27,15 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  border: 1px solid #e5e7eb;      /* 외곽선 */
+  border: 1px solid #e5e7eb;      
   border-radius: 12px;
-  overflow: hidden;                /* 둥근 모서리에 맞춰 자르기 */
-  background: #fff;                /* 흰 배경으로 선이 또렷 */
+  overflow: hidden;          
+  background: #fff;         
 }
 
 /* 항목 */
 .board__item {
-  border-top: 1px solid #e5e7eb;   /* 항목 사이 디바이더 */
+  border-top: 1px solid #e5e7eb; 
 }
 .board__item:first-child {
   border-top: none;
@@ -53,7 +53,7 @@
   transition: background 0.12s ease;
 }
 .board__link:hover {
-  background: #f9fafb;            /* 살짝 음영 */
+  background: #f9fafb;     
 }
 
 /* 좌측 텍스트 구역 */

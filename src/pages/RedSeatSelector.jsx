@@ -23,7 +23,7 @@ export default function RedSeatSelector() {
   const prefix = "r";
   const seatPrice = 15000;
 
-  // ✅ 좌석 조회 (백엔드: /api/seats?zone&stadiumId)
+  // 좌석 조회 (백엔드: /api/seats?zone&stadiumId)
   useEffect(() => {
     if (!stadiumId) return;
     axios
@@ -37,14 +37,14 @@ export default function RedSeatSelector() {
       .catch(console.error);
   }, [stadiumId, zoneName]);
 
-  // ✅ 오류 메시지 자동 닫힘
+  // 오류 메시지 자동 닫힘
   useEffect(() => {
     if (!error) return;
     const t = setTimeout(() => setError(""), 1800);
     return () => clearTimeout(t);
   }, [error]);
 
-  // ✅ 좌석 배열 (6행 × 15열 + 상단 10석 → 총 100석)
+  // 좌석 배열 (6행 × 15열 + 상단 10석 → 총 100석)
   const seatRows = useMemo(() => {
     const rows = [];
     let count = 1;
@@ -69,7 +69,7 @@ export default function RedSeatSelector() {
     return rows;
   }, []);
 
-  // ✅ 좌석 그룹 계산 (다인원 연속 선택)
+  // 좌석 그룹 계산 (다인원 연속 선택)
   const getSeatGroup = (seat) => {
     for (const row of seatRows) {
       const idx = row.indexOf(seat);
@@ -96,7 +96,7 @@ export default function RedSeatSelector() {
 
   const hoveredGroup = hoveredSeat ? getSeatGroup(hoveredSeat) : [];
 
-  // ✅ 좌석 클릭
+  // 좌석 클릭
   const handleClickSeat = (seat) => {
     if (reservedSeats.includes(seat)) {
       setError("예매할 수 없는 좌석입니다.");
@@ -115,7 +115,7 @@ export default function RedSeatSelector() {
     setSelectedSeats((prev) => [...prev, ...group]);
   };
 
-  // ✅ 예매 → 결제 페이지 이동
+  // 예매 → 결제 페이지 이동
   const handleReserve = async () => {
     if (!clicked) return;
     if (!gameId || !stadiumId) {
@@ -162,7 +162,7 @@ export default function RedSeatSelector() {
     }
   };
 
-  // ✅ 렌더링
+  // 렌더링
   return (
     <div className={styles.container}>
       {error && <div className={styles.toast}>{error}</div>}

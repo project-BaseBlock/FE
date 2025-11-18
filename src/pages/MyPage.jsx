@@ -10,12 +10,12 @@ export default function MyPage() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      // ★ [ADDED] 로그인 후 되돌아오기 위한 리다이렉트 목적지 저장
+      // 로그인 후 되돌아오기 위한 리다이렉트 목적지 저장
       sessionStorage.setItem("postLoginRedirect", location.pathname + location.search);
       alert("로그인이 필요합니다.");
       navigate("/login", { replace: true });
     }
-    // ★ [CHANGED] 위치 바뀔 때마다 토큰 재점검
+    // 위치 바뀔 때마다 토큰 재점검
   }, [navigate, location.pathname, location.search]);
 
   return (
@@ -23,7 +23,7 @@ export default function MyPage() {
       <aside className={styles.sidebar}>
         <h2 className={styles.title}>마이페이지</h2>
         <nav className={styles.menu}>
-          {/* ★ [CHANGED] NavLink로 교체: 활성 상태(class) 자동 부여 */}
+          {/* NavLink로 교체: 활성 상태(class) 자동 부여 */}
           <NavLink
             to="/mypage"
             end
@@ -57,7 +57,7 @@ export default function MyPage() {
       <main className={styles.content}>
         <Outlet />
 
-        {/* ★ [ADDED] 기본 콘텐츠: 자식 라우트가 없을 때(예: /mypage) 간단 안내 */}
+        {/* 기본 콘텐츠: 자식 라우트가 없을 때(예: /mypage) 간단 안내 */}
         {location.pathname === "/mypage" && (
           <section style={{ padding: 16 }}>
             <h3 style={{ marginBottom: 8 }}>내 정보</h3>

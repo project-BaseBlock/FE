@@ -35,7 +35,7 @@ function Board() {
 
   return (
     <div className="board">
-      {/* ✅ 제목 + 글쓰기 버튼 한 줄 정렬 */}
+      {/* 제목 + 글쓰기 버튼 한 줄 정렬 */}
       <div
         style={{
           display: "flex",
@@ -46,7 +46,7 @@ function Board() {
       >
         <h2 className="board__title">게시판</h2>
 
-        {/* ✅ 글쓰기 버튼 */}
+        {/* 글쓰기 버튼 */}
         <button
           onClick={handleWriteClick} // [CHANGED]
           style={{

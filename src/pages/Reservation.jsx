@@ -29,7 +29,7 @@ function Reservation() {
       try {
         const { start, end } = getCurrentMonthRange();
 
-        // ⚠️ 백엔드 엔드포인트가 /games 라면 아래 URL을 "/games"로 바꿔주세요.
+        // 백엔드 엔드포인트가 /games 라면 아래 URL을 "/games"로 바꿔주세요.
         const res = await axios.get(`/schedule`, { params: { start, end } });
 
         const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
@@ -52,7 +52,7 @@ function Reservation() {
     }
   };
 
-  // ✅ 버튼 활성: '문자열'로 날짜 비교 (타임존 영향 제거)
+  // 버튼 활성: '문자열'로 날짜 비교 (타임존 영향 제거)
   //    내일 ~ 내일+6일(총 7일) + status != END
   const isReservable = (row) => {
     try {

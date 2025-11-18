@@ -20,7 +20,7 @@ function Admin() {
       }
     })();
 
-  // ✅ 수동 크롤링 실행 함수
+  // 수동 크롤링 실행 함수
   async function handleManualCrawl() {
     if (!window.confirm("정말 수동 크롤링을 실행하시겠습니까?")) return;
     setLoading(true);

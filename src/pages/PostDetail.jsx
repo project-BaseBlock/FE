@@ -12,7 +12,7 @@ export default function PostDetail() {
 
   const fetchPost = async () => {
     try {
-      const res = await axios.get(`/posts/${id}`); // ✅ 공개 엔드포인트
+      const res = await axios.get(`/posts/${id}`); // 공개 엔드포인트
       setPost(res.data);
     } catch (err) {
       console.error("게시글 조회 실패", err);
@@ -28,7 +28,7 @@ export default function PostDetail() {
   const handleDelete = async () => {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
     try {
-      await axios.delete(`/posts/${id}`); // ✅ 작성자 or ADMIN/MASTER에 한해 성공
+      await axios.delete(`/posts/${id}`); // 작성자 or ADMIN/MASTER에 한해 성공
       alert("삭제되었습니다.");
       navigate("/board");
     } catch (err) {

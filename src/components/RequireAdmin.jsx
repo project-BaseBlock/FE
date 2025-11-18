@@ -6,7 +6,7 @@ export default function RequireAdmin({ children }) {
   const location = useLocation();
   const ok = isAuthenticated() && hasAdminRole();
 
-  /* 🔧 StrictMode 중복 alert 방지 */
+  /* StrictMode 중복 alert 방지 */
   const alertedRef = useRef(false);
   useEffect(() => {
     if (!ok && !alertedRef.current) {
@@ -16,7 +16,7 @@ export default function RequireAdmin({ children }) {
   }, [ok]);
 
   if (!ok) {
-    /* 🔧 권한 부족 시 홈으로. 필요하면 /login으로 바꿔도 됨 */
+    /* 권한 부족 시 홈으로. 필요하면 /login으로 바꿔도 됨 */
     return <Navigate to="/" replace state={{ from: location }} />;
   }
   return children;

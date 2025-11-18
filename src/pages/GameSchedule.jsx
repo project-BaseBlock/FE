@@ -27,7 +27,6 @@ function GameSchedule() {
   const fetchGames = async (y, m) => {
     const { start, end } = getFirstLastDay(y, m);
     try {
-      // ⚠️ 백엔드가 /games라면 아래 URL을 "/games"로 바꾸세요.
       const res = await axios.get(`/schedule`, { params: { start, end } });
       const data = Array.isArray(res.data) ? res.data : (res.data?.content ?? []);
       setGames(Array.isArray(data) ? data : []);
@@ -76,7 +75,7 @@ function GameSchedule() {
           <tr>
             <th className="p-2 border">날짜</th>
             <th className="p-2 border">경기</th>
-            <th className="p-2 border">결과</th>{/* ⬅️ 결과 컬럼 추가 */}
+            <th className="p-2 border">결과</th>{/* 결과 컬럼 추가 */}
             <th className="p-2 border">구장</th>
           </tr>
         </thead>

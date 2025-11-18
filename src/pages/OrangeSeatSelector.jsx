@@ -23,7 +23,7 @@ export default function OrangeSeatSelector() {
   const prefix = "a";
   const seatPrice = 20000;
 
-  // ✅ 좌석 조회
+  // 좌석 조회
   useEffect(() => {
     if (!stadiumId) return;
     axios
@@ -37,14 +37,14 @@ export default function OrangeSeatSelector() {
       .catch(console.error);
   }, [stadiumId, zoneName]);
 
-  // ✅ 오류 자동 닫기
+  // 오류 자동 닫기
   useEffect(() => {
     if (!error) return;
     const t = setTimeout(() => setError(""), 1800);
     return () => clearTimeout(t);
   }, [error]);
 
-  // ✅ 좌석 생성 (100석)
+  // 좌석 생성 (100석)
   const seatRows = useMemo(() => {
     const rows = [];
     let count = 1;
@@ -59,7 +59,7 @@ export default function OrangeSeatSelector() {
     return rows;
   }, []);
 
-  // ✅ 다인원 선택 처리
+  // 다인원 선택 처리
   const getSeatGroup = (seat) => {
     for (const row of seatRows) {
       const idx = row.indexOf(seat);
@@ -83,7 +83,7 @@ export default function OrangeSeatSelector() {
 
   const hoveredGroup = hoveredSeat ? getSeatGroup(hoveredSeat) : [];
 
-  // ✅ 좌석 클릭
+  // 좌석 클릭
   const handleClickSeat = (seat) => {
     if (reservedSeats.includes(seat)) {
       setError("예매할 수 없는 좌석입니다.");
@@ -102,7 +102,7 @@ export default function OrangeSeatSelector() {
     setSelectedSeats((prev) => [...prev, ...group]);
   };
 
-  // ✅ 예매 및 결제 이동
+  // 예매 및 결제 이동
   const handleReserve = async () => {
     if (!clicked) return;
     if (!gameId || !stadiumId) {

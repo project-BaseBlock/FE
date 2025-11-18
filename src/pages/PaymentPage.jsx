@@ -130,7 +130,7 @@ export default function PaymentPage() {
             pay_method: "card",
             merchant_uid: ready.merchantUid,
             name: "BaseBlock 티켓",
-            amount: ready.amount, // ★ 서버 확정 금액
+            amount: ready.amount, // 서버 확정 금액
             buyer_email: ready.buyerEmail || "test@example.com",
             buyer_name: ready.buyerName || "테스트사용자",
             buyer_tel: ready.buyerTel || "010-0000-0000",
@@ -151,7 +151,7 @@ export default function PaymentPage() {
               const { data } = await axios.post(`/payments/verify`, payload, { headers });
               setMessage(JSON.stringify(data, null, 2));
               setStatus("done");
-              // ✅ 결제 성공 시 메타 정리
+              // 결제 성공 시 메타 정리
               clearLocalMeta();
               resolve();
             } catch (e) {
@@ -181,7 +181,7 @@ export default function PaymentPage() {
       const r = await axios.post(`/payments/verify`, payload, { headers });
       setMessage(JSON.stringify(r.data, null, 2));
       setStatus("done");
-      // ✅ 목 성공 시에도 메타 정리
+      // 목 성공 시에도 메타 정리
       clearLocalMeta();
     } catch (e) {
       setStatus("error");

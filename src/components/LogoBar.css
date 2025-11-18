@@ -1,12 +1,11 @@
-/* 네비바 위 로고 배너 (가운데 정렬) — 3배 확대 */
 .logobar {
-  height: 168px;               /* 기존 56px × 3 */
+  height: 168px;
   display: flex;
-  align-items: center;          /* 수직 중앙 */
-  justify-content: center;      /* 수평 중앙 */
+  align-items: center;
+  justify-content: center;
   background: #ffffff;
   border-bottom: 1px solid #eee;
-  padding: 12px;                /* 여유 */
+  padding: 12px; 
   /* 상단 고정 원하면 주석 해제
   position: sticky;
   top: 0;
@@ -15,14 +14,14 @@
 }
 
 .logobar__logo {
-  max-height: 144px;            /* 기존 48px × 3 */
-  width: auto;                  /* 비율 유지 */
+  max-height: 144px;
+  width: auto;
   object-fit: contain;
   display: block;
 }
 
 /* 모바일에서 너무 크면 적당히 낮추고 싶을 때 (선택) */
 @media (max-width: 480px) {
-  .logobar { height: 120px; }   /* 선택 조정 */
+  .logobar { height: 120px; }
   .logobar__logo { max-height: 96px; }
 }

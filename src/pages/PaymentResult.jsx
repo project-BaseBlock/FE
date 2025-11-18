@@ -1,20 +1,20 @@
 // src/pages/PaymentResult.jsx
 import React, { useEffect, useState } from "react";
-// ★ [ADDED] 결제 직후 예약ID로 티켓 조회 → 상세로 이동
-import { ticketApi } from "../api/ticketApi";                // ★ [ADDED]
-import { useNavigate, useSearchParams } from "react-router-dom"; // ★ [ADDED]
+// 결제 직후 예약ID로 티켓 조회 → 상세로 이동
+import { ticketApi } from "../api/ticketApi";   
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function PaymentResult() {
-  // ★ [ADDED] 결제 완료 후 붙여온 reservationId 쿼리 파라미터 사용
-  const [searchParams] = useSearchParams();                     // ★ [ADDED]
-  const reservationId = searchParams.get("reservationId");      // ★ [ADDED]
-  const navigate = useNavigate();                               // ★ [ADDED]
+  // 결제 완료 후 붙여온 reservationId 쿼리 파라미터 사용
+  const [searchParams] = useSearchParams();                 
+  const reservationId = searchParams.get("reservationId");    
+  const navigate = useNavigate();      
 
   // 페이지 상태
   const [status, setStatus] = useState("processing"); // processing | verified | no-ticket | error
   const [message, setMessage] = useState("");
 
-  // ★ [ADDED] (선택) 결제 검증 로직: 기존에 네가 쓰던 ready/paid/verify 흐름이 있으면 이 함수 안에서 호출해
+  // 결제 검증 로직: 기존에 네가 쓰던 ready/paid/verify 흐름이 있으면 이 함수 안에서 호출
   async function verifyPaymentIfNeeded() {
     try {
       // ─────────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ export default function PaymentResult() {
     }
   }
 
-  // ★ [ADDED] 결제 검증 성공 시 → reservationId 기반 티켓 조회 → 상세로 이동
+  // 결제 검증 성공 시 → reservationId 기반 티켓 조회 → 상세로 이동
   async function fetchTicketAndRedirect() {
     try {
       if (!reservationId) {
@@ -56,13 +56,13 @@ export default function PaymentResult() {
   useEffect(() => {
     (async () => {
       // 1) (옵션) 결제 검증
-      const ok = await verifyPaymentIfNeeded();   // ★ [ADDED]
+      const ok = await verifyPaymentIfNeeded(); 
       if (!ok) return;
 
-      setStatus("verified");                      // ★ [ADDED]
+      setStatus("verified");       
 
       // 2) 예약ID로 티켓 조회 → 상세로 이동
-      await fetchTicketAndRedirect();             // ★ [ADDED]
+      await fetchTicketAndRedirect();  
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reservationId]); // ★ [ADDED]
